@@ -17,7 +17,7 @@ jobs:
     # 指定运行环境(git提供的虚拟机)
     runs-on: ubuntu-latest
 
-    # 任务们，逐一进行
+    # 任务，逐一进行
     steps:
       # CI集成阶段
       - name: 拉取代码
