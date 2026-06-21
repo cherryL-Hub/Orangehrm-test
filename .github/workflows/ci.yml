@@ -44,10 +44,15 @@ jobs:
       - name: 运行测试并生成 Allure 数据
         run: xvfb-run pytest -v -s --alluredir=./allure-results
 
-      - name: 安装Allure命令行工具
-        run: | 
+      - name: 安装 Allure 命令行工具
+        run: |
           sudo apt-get update
-          sudo apt-get install -y allure
+          sudo apt-get install -y wget unzip
+          wget -q https://github.com/allure-framework/allure2/releases/download/2.32.2/allure-2.32.2.zip
+          unzip allure-2.32.2.zip
+          sudo mv allure-2.32.2 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+          allure --version
 
       - name: 生成Allure报告
         run: allure generate ./allure-results -o ./allure-report --clean
