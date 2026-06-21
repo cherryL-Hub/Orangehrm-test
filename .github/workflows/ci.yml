@@ -41,6 +41,16 @@ jobs:
           sudo apt-get install -y google-chrome-stable
           google-chrome --version
 
+      - name: 安装 Chromedriver
+        run: |
+          sudo apt-get install -y unzip
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
+          wget -q "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/linux64/chromedriver-linux64.zip"
+          unzip chromedriver-linux64.zip
+          sudo mv chromedriver /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
+          chromedriver --version
+
       - name: 运行测试并生成Allure数据
         run: pytest -v -s --alluredir=./allure-results
 
