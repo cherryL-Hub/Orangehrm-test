@@ -31,18 +31,18 @@ jobs:
       - name: 安装依赖
         run: pip install -r requirements.txt  #这里不使用去除安装包缓存的操作，目的是下次推送可以直接运行
 
-      - name: 安装 Chrome 浏览器
+      - name: 安装 Chrome 浏览器和依赖
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget gnupg
+          sudo apt-get install -y wget gnupg xvfb
           wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
           echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
           google-chrome --version
 
-      - name: 运行测试并生成Allure数据
-        run: pytest -v -s --alluredir=./allure-results
+      - name: 运行测试并生成 Allure 数据
+        run: xvfb-run pytest -v -s --alluredir=./allure-results
 
       - name: 安装Allure命令行工具
         run: | 
