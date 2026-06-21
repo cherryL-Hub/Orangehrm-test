@@ -1,0 +1,63 @@
+# 当前工作流名字
+name: CI/CD Pipeline
+
+# 触发工作流条件(2）
+on:
+  # 推送git时
+  push:
+    branches: [main,master]
+  # 创建或更新PR时
+  pull_request:
+    branches: [ main, master ]
+
+#多个工作作业
+jobs:
+  #名字
+  test-and-push:
+    # 指定运行环境(git提供的虚拟机)
+    runs-on: ubuntu-latest
+
+    # 任务们，逐一进行
+    steps:
+      # CI集成阶段
+      - name: 拉取代码
+        uses: actions/checkout@v4 #使用版本4的git动作集合中的checkout拉取仓库里的代码到虚拟机
+
+      - name: 安装python
+        uses: actions/set-python@v5
+        with:              #使用版本5(构建速度更快)的actions里的安装python动作，将3.11版本传给动作
+          python-version: '3.11'
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt  #这里不使用去除安装包缓存的操作，目的是下次推送可以直接运行
+
+      - name: 运行测试并生成Allure数据
+        run: pytest -v -s --alluredir=./allure-results
+
+      - name: 安装Allure命令行工具
+        run: | 
+          sudo apt-get update
+          sudo apt-get install -y allure
+
+      - name: 生成Allure报告
+        run: allure generate ./allure-results -o ./allure-report --clean
+
+      - name: 上传 Allure 报告
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: ./allure-report
+
+
+      # CD部署
+      - name: 登录阿里云ACR
+        run: | 
+         echo "${{ secrets.ALIYUN_PASSWORD }}" | docker login --username=${{ secrets.ALIYUN_USERNAME }} crpi-u2e370cqx4idzcz9.cn-guangzhou.personal.cr.aliyuncs.com --password-stdin
+
+      - name: 构建镜像
+        run: |
+          docker build -t crpi-u2e370cqx4idzcz9.cn-guangzhou.personal.cr.aliyuncs.com/lxself-test/orangehrm-test:latest .
+
+      - name: 推送镜像
+        run: |
+          docker push crpi-u2e370cqx4idzcz9.cn-guangzhou.personal.cr.aliyuncs.com/lxself-test/orangehrm-test:latest
