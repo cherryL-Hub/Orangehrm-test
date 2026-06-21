@@ -6,7 +6,7 @@ WORKDIR /app
 # 将根目录的环境列表复制到当前文件夹
 COPY requirements.txt .
 # 读取环境列表，逐个下载
-RUN pip install --no--cache--dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 #构建+运行(最终镜像)
 #基础镜像
