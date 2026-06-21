@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v4 #使用版本4的git动作集合中的checkout拉取仓库里的代码到虚拟机
 
       - name: 安装python
-        uses: actions/set-python@v5
+        uses: actions/setup-python@v5
         with:              #使用版本5(构建速度更快)的actions里的安装python动作，将3.11版本传给动作
           python-version: '3.11'
 
